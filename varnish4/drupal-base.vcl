@@ -65,7 +65,7 @@ backend default {
   /* Default backend on the same machine. */
   # WARNING: timeouts could be not big enought for certain POST requests.
   .host = "127.0.0.1";
-  .port = "8008";
+  .port = "8080";
   .max_connections = 100;
   .connect_timeout = 60s;
   .first_byte_timeout = 60s;
@@ -448,6 +448,13 @@ sub vcl_pipe {
 # Hash is used by Varnish to uniquely identify objects.
 # See https://www.varnish-cache.org/docs/4.0/users-guide/vcl-built-in-subs.html#vcl-hash
 sub vcl_hash {
+  /* 按主机名或ip分别hash */
+  hash_data(req.url);
+  if (req.http.host) {
+      hash_data(req.http.host);
+  } else {
+      hash_data(server.ip);
+  }
   /* Hash cookie data */
   # As requests with same URL and host can produce diferent results when issued
   # with different cookies, we need to store items hashed with the associated
@@ -475,16 +482,7 @@ sub vcl_hash {
   /* Continue with built-in logic */
   # We want built-in logic to be processed after ours so we don't call return.
 }
-# 按主机名或ip分别hash
- sub vcl_hash {
-     hash_data(req.url);
-     if (req.http.host) {
-         hash_data(req.http.host);
-     } else {
-         hash_data(server.ip);
-     }
-     return (lookup);
- }
+
 
 # vcl_purge: Called after the purge has been executed and all its variants have
 # been evited.
