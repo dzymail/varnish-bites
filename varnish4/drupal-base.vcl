@@ -198,7 +198,16 @@ sub vcl_recv {
   # Example normalize the host header, remove the port (in case you're testing
   # this on various TCP ports)
   # set req.http.Host = regsub(req.http.Host, ":[0-9]+", "");
-
+  //获得正确的ip地址
+  if (req.restarts == 0) {
+    if (req.http.x-forwarded-for) {
+      set req.http.X-Forwarded-For =
+      req.http.X-Forwarded-For + ", " + client.ip;
+    } else {
+      set req.http.X-Forwarded-For = client.ip;
+    }
+  }
+  
   /* 5th: Bypass breakpoint 1 */
   # Useful for debugging we can now pipe or pass the request to backend with
   # headers setted.
@@ -466,15 +475,16 @@ sub vcl_hash {
   /* Continue with built-in logic */
   # We want built-in logic to be processed after ours so we don't call return.
 }
-# sub vcl_hash {
-#     hash_data(req.url);
-#     if (req.http.host) {
-#         hash_data(req.http.host);
-#     } else {
-#         hash_data(server.ip);
-#     }
-#     return (lookup);
-# }
+# 按主机名或ip分别hash
+ sub vcl_hash {
+     hash_data(req.url);
+     if (req.http.host) {
+         hash_data(req.http.host);
+     } else {
+         hash_data(server.ip);
+     }
+     return (lookup);
+ }
 
 # vcl_purge: Called after the purge has been executed and all its variants have
 # been evited.
