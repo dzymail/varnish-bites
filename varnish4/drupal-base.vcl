@@ -268,16 +268,20 @@ sub vcl_recv {
   # }
   # Drupal exceptions, edit if we want to cache some AJAX/AHAH request.
   # Add here filters for never cache URLs such as Payment Gateway's callbacks.
-  if ( req.url ~ "^/status\.php$"
-    || req.url ~ "^/update\.php$"
-    || req.url ~ "^/ooyala/ping$"
-    || req.url ~ "^/admin/build/features"
-    || req.url ~ "^/info/.*$"
-    || req.url ~ "^/flag/.*$"
-    || req.url ~ "^.*/ajax/.*$"
-    || req.url ~ "^.*/ahah/.*$"
-  ) {
-    /* Do not cache these paths */
+  if (req.url ~ "^/status\.php$" ||
+      req.url ~ "^/update\.php" ||
+      req.url ~ "^/install\.php" ||
+      req.url ~ "^/apc\.php$" ||
+      req.url ~ "^/admin" ||
+      req.url ~ "^/admin/.*$" ||
+      req.url ~ "^/user" ||
+      req.url ~ "^/user/.*$" ||
+      req.url ~ "^/users/.*$" ||
+      req.url ~ "^/info/.*$" ||
+      req.url ~ "^/flag/.*$" ||
+      req.url ~ "^.*/ajax/.*$" ||
+      req.url ~ "^.*/ahah/.*$") {
+    # Do not cache these paths.
     return (pass);
   }
   # Pipe these paths directly to backend for streaming.
