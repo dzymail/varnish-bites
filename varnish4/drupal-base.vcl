@@ -63,7 +63,7 @@ probe basic {
 # See https://www.varnish-cache.org/docs/4.0/reference/vcl.html#backend-definition
 backend default {
   /* Default backend on the same machine. */
-  # WARNING: timeouts could be not big enought for certain POST requests.
+  # WARNING: timeouts 对某些 POST 请求来说可能太短。
   .host = "127.0.0.1";
   .port = "8080";
   .max_connections = 100;
@@ -82,6 +82,8 @@ acl purge_ban {
 acl allowed_monitors {
   /* Simple access control list for allowing item purge for the self machine */
   "127.0.0.1"/32; // We can use'"localhost";' instead
+  "192.168.50.0"/24;
+  "localhost";
 }
 # acl own_proxys {
 #   "127.0.0.1"/32; // We can use'"localhost";' instead
