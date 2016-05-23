@@ -66,10 +66,10 @@ backend default {
   # WARNING: timeouts 对某些 POST 请求来说可能太短。
   .host = "127.0.0.1";
   .port = "8080";
-  .max_connections = 100;
-  .connect_timeout = 60s;
-  .first_byte_timeout = 60s;
-  .between_bytes_timeout = 60s;
+  .max_connections = 800;
+  .connect_timeout = 600s;
+  .first_byte_timeout = 600s;
+  .between_bytes_timeout = 600s;
   .probe = basic;
 }
 
